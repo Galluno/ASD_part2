@@ -5,6 +5,7 @@
 #include <time.h>
 #include <math.h>
 #include "BSTrees.h"
+#include "RedBlack.c"
 
 #define A 1000    //A=numero di operazioni minime sull' albero= Nmin    1000
 #define Emax 0.01 //Errore relativo massimo
@@ -75,7 +76,7 @@ int main()
                 case 1:
 
                     //INIZIALIZZO ROOT DEL MIO ALBERO
-                    struct node *root = NULL;
+                    /*struct node *root = NULL;
 
                     for (int i = 0; i < n; i++)
                     {
@@ -91,17 +92,37 @@ int main()
 
                     clock_gettime(CLOCK_MONOTONIC, &end);
                     //DESTROY TREE: DEVO ELIMINARE L'ALBERO CHE HO CREATO
-                    destroyTree(root);
+                    destroyTree(root);*/
 
-                    break;  //end case1
+                    break; //end case1
 
                 case 2:
 
-                    break;  //end case2
+                    break; //end case2
 
                 case 3:
 
-                    break;  //end case3
+                    struct RBT *t = new_red_black_tree();
+                    struct RBTnode *root = NULL;
+
+                    for (int i = 0; i < n; i++)
+                    {
+                        //printf("lol\n");
+                        //GENERO LA CHIAVE K IN MANIERA PSEUDO-CASUALE
+                        int k = rand();
+                        //CERCO K NELL'ALBERO
+                        if (RBTfind(t, t->root,k) == NULL)
+                        {
+                            struct RBTnode *n = new_tree_node(k, "");
+                            RBTinsert(t, n);
+                        }
+                    }
+
+                    RBTdestroyTree(t, t->root); //deallocazione dell'albero
+                    free(t->leaf);
+                    free(t);
+
+                    break; //end case3
                 }
 
                 k++;
