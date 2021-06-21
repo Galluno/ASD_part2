@@ -11,7 +11,7 @@ struct node
 
 //................................................................................................................................
 //CREAZIONE DI UN NODO
-struct node *newNode (int data, char *v)
+struct node *new_node (int data, char *v)
 {
   struct node *n = (struct node *) malloc (sizeof (struct node));
   n->s = v;			//s punta alla stessa locazione di v, ossia al primo carattere della stringa
@@ -51,7 +51,7 @@ struct node *insert (struct node *node, int key, char *v)
 {
    
   if (node == NULL){
-    return newNode (key, v);
+    return new_node (key, v);
   }
   if (key < node->key){
     node->left = insert (node->left, key, v);
