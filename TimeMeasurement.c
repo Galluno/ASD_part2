@@ -27,13 +27,22 @@ int main()
 
     double B = exp((log(1000000) - log(A)) / 99); //1 mln = numero massimo operazioni sull' albero = Nmaxn   1000000
     double n;                                     //numero di operazioni sull'albero
-    int measurePrec = 5;                        //indice di precisione della misura ~ 100
+    int measurePrec = 5;                          //indice di precisione della misura ~ 100
 
     double tn = 0; //TEMPO MEDIO MISURATO PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
 
     double *destroyTime; //ARRAY CONTENENTE I TEMPI MEDI MISURATI PER ELIMINARE UN ALBERO, AL VARIARE DI n
     //destroyTime = TreeDestructionTime(tipo di albero);                   //destroyTime[j] = TEMPO MEDIO MISURATO PER ELIMINARE UN ALBERO CREATO CON n=floor(A*B^j) OPERAZIONI
+
+    //Menu
+    printf("Scegli il tipo di albero:\n");
+    printf("1-BST\n");
+    printf("2-AVL\n");
+    printf("3-RBT\n");
+    int scelta;
+    printf("Albero: ");
+    scanf("%d", &scelta);
 
     for (int j = 0; j <= 99; j++)
     {
@@ -61,24 +70,39 @@ int main()
 
             do
             {
-                //INIZIALIZZO ROOT DEL MIO ALBERO
-                struct node *root = NULL;
-
-                for (int i = 0; i < n; i++)
+                switch (scelta)
                 {
-                    //printf("lol\n");
-                    //GENERO LA CHIAVE K IN MANIERA PSEUDO-CASUALE
-                    int k = rand();
-                    //CERCO K NELL'ALBERO
-                    if (find(root, k) == NULL)
-                    {
-                        root = insert(root, k, ""); //SE NON LA TROVO LA INSERISCO
-                    }
-                }
+                case 1:
 
-                clock_gettime(CLOCK_MONOTONIC, &end);
-                //DESTROY TREE: DEVO ELIMINARE L'ALBERO CHE HO CREATO
-                destroyTree(root);
+                    //INIZIALIZZO ROOT DEL MIO ALBERO
+                    struct node *root = NULL;
+
+                    for (int i = 0; i < n; i++)
+                    {
+                        //printf("lol\n");
+                        //GENERO LA CHIAVE K IN MANIERA PSEUDO-CASUALE
+                        int k = rand();
+                        //CERCO K NELL'ALBERO
+                        if (find(root, k) == NULL)
+                        {
+                            root = insert(root, k, ""); //SE NON LA TROVO LA INSERISCO
+                        }
+                    }
+
+                    clock_gettime(CLOCK_MONOTONIC, &end);
+                    //DESTROY TREE: DEVO ELIMINARE L'ALBERO CHE HO CREATO
+                    destroyTree(root);
+
+                    break;  //end case1
+
+                case 2:
+
+                    break;  //end case2
+
+                case 3:
+
+                    break;  //end case3
+                }
 
                 k++;
                 tempo = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / (double)BILLION; //tempo in secondi
@@ -86,7 +110,6 @@ int main()
             } while (tempo < ((R / Emax) + R));
 
             vector[w] = (tempo / k) / n; //TEMPO MEDIO E AMMORTIZZATO PER L'ESECUZIONE DI n OPERAZIONI
-            //vector[w]= ((tempo / k)- destroyTime[j])/n; //TEMPO MEDIO E AMMORTIZZATO PER L'ESECUZIONE DI n OPERAZIONI
             //printf("%d\n", w);
         }
 
@@ -95,7 +118,7 @@ int main()
         {
             time_sum += vector[z];
         }
-        tn = (time_sum / measurePrec)*(double)MILION; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI PER L'ESECUZIONE DI n OPERAZIONI(VALORE CHE RESTITUIAMO)
+        tn = ((time_sum / measurePrec) - destroyTime[j]) * (double)MILION; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI PER L'ESECUZIONE DI n OPERAZIONI(VALORE CHE RESTITUIAMO)
 
         //CALCOLO DEVIAZIONE STANDARD TEMPO MEDIO E AMMORTIZZATO PER ESEGUIRE n OPERAZIONI
         double sommatoria = 0.00; //inizio del calcolo della deviazione
