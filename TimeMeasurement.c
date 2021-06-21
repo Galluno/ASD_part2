@@ -6,7 +6,7 @@
 #include <math.h>
 #include "BSTrees.h"
 #include "RedBlack.c"
-
+#include "AVL.c"
 #define A 1000    //A=numero di operazioni minime sull' albero= Nmin    1000
 #define Emax 0.01 //Errore relativo massimo
 #define BILLION 1000000000L;
@@ -28,7 +28,7 @@ int main()
 
     double B = exp((log(1000000) - log(A)) / 99); //1 mln = numero massimo operazioni sull' albero = Nmaxn   1000000
     double n;                                     //numero di operazioni sull'albero
-    int measurePrec = 5;                          //indice di precisione della misura ~ 100
+    int measurePrec = 100;                          //indice di precisione della misura ~ 100
 
     double tn = 0; //TEMPO MEDIO MISURATO PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
@@ -37,11 +37,11 @@ int main()
     //destroyTime = TreeDestructionTime(tipo di albero);                   //destroyTime[j] = TEMPO MEDIO MISURATO PER ELIMINARE UN ALBERO CREATO CON n=floor(A*B^j) OPERAZIONI
 
     //Menu
+    int scelta;
     printf("Scegli il tipo di albero:\n");
     printf("1-BST\n");
     printf("2-AVL\n");
     printf("3-RBT\n");
-    int scelta;
     printf("Albero: ");
     scanf("%d", &scelta);
 
@@ -71,12 +71,17 @@ int main()
 
             do
             {
+                struct node *bst_root = NULL;
+                struct avl_node *avl_root = NULL;
+                struct RBT *t = NULL; 
+                
                 switch (scelta)
                 {
-                case 1:
+
+                  case 1:
 
                     //INIZIALIZZO ROOT DEL MIO ALBERO
-                    /*struct node *root = NULL;
+                    
 
                     for (int i = 0; i < n; i++)
                     {
@@ -84,54 +89,80 @@ int main()
                         //GENERO LA CHIAVE K IN MANIERA PSEUDO-CASUALE
                         int k = rand();
                         //CERCO K NELL'ALBERO
-                        if (find(root, k) == NULL)
+                        if (find(bst_root, k) == NULL)
                         {
-                            root = insert(root, k, ""); //SE NON LA TROVO LA INSERISCO
+                            bst_root = insert(bst_root, k, ""); //SE NON LA TROVO LA INSERISCO
                         }
                     }
 
                     clock_gettime(CLOCK_MONOTONIC, &end);
                     //DESTROY TREE: DEVO ELIMINARE L'ALBERO CHE HO CREATO
-                    destroyTree(root);*/
+                    destroyTree(bst_root);
 
                     break; //end case1
 
-                case 2:
+                  case 2:
+                    //INIZIALIZZO ROOT DEL MIO ALBERO
+                    
+
+                    for (int i = 0; i < n; i++)
+                    {
+                        
+                        //GENERO LA CHIAVE K IN MANIERA PSEUDO-CASUALE
+                        int k = rand();
+                        //CERCO K NELL'ALBERO
+                        if (avl_find(avl_root, k) == NULL)
+                        {
+                            avl_root = avl_insert(avl_root, k, ""); //SE NON LA TROVO LA INSERISCO
+                        }
+                    }
+
+                    clock_gettime(CLOCK_MONOTONIC, &end);
+                    //DESTROY TREE: DEVO ELIMINARE L'ALBERO CHE HO CREATO
+                    avl_destroyTree(avl_root);
 
                     break; //end case2
 
-                case 3:
+                  case 3:
 
-                    struct RBT *t = new_red_black_tree();
-                    struct RBTnode *root = NULL;
-
+                    
+                    t = new_red_black_tree();
                     for (int i = 0; i < n; i++)
                     {
                         //printf("lol\n");
                         //GENERO LA CHIAVE K IN MANIERA PSEUDO-CASUALE
                         int k = rand();
                         //CERCO K NELL'ALBERO
-                        if (RBTfind(t, t->root,k) == NULL)
+                        if (rb_find(t, t->root,k) == NULL)
                         {
-                            struct RBTnode *n = new_tree_node(k, "");
-                            RBTinsert(t, n);
+                            struct rb_node *n = new_tree_node(k, "");
+                            rb_insert(t, n);
                         }
                     }
-
-                    RBTdestroyTree(t, t->root); //deallocazione dell'albero
+                    clock_gettime(CLOCK_MONOTONIC, &end);
+                    rb_destroyTree(t, t->root); //deallocazione dell'albero
                     free(t->leaf);
                     free(t);
 
                     break; //end case3
-                }
+                  
 
+
+                   default:
+                        printf("Valore non valido.\n");
+                        break;
+                    
+
+                 
+                }
+                
                 k++;
                 tempo = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / (double)BILLION; //tempo in secondi
 
             } while (tempo < ((R / Emax) + R));
 
             vector[w] = (tempo / k) / n; //TEMPO MEDIO E AMMORTIZZATO PER L'ESECUZIONE DI n OPERAZIONI
-            //printf("%d\n", w);
+            
         }
 
         //CALCOLO TEMPO MEDIO E AMMORTIZZAT0 PER L'ESECUZIONE DI n OPERAZIONI, tn
