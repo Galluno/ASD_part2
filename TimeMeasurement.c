@@ -9,8 +9,7 @@
 #include "AVL.c"
 #define A 1000    //A=numero di operazioni minime sull' albero= Nmin    1000
 #define Emax 0.01 //Errore relativo massimo
-#define BILLION 1000000000L;
-#define MILION 1000000L;
+#define BILLION 1000000000L
 //...................................................................................................................................................................
 long getResolution()
 {
@@ -61,8 +60,7 @@ int main()
 
             struct timespec start, end;
 
-            long R = getResolution() / (double)BILLION;
-
+            long R = getResolution(); //RISOLUZIONE IN NANO-SECONDI
             int k = 0;
 
             double tempo = 0;
@@ -157,11 +155,11 @@ int main()
                 }
                 
                 k++;
-                tempo = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / (double)BILLION; //tempo in secondi
-
+               
+                tempo = ((end.tv_sec - start.tv_sec) *(double)BILLION)  + (end.tv_nsec - start.tv_nsec); //TEMPO IN NANO-SECONDI
             } while (tempo < ((R / Emax) + R));
 
-            vector[w] = (tempo / k) / n; //TEMPO MEDIO E AMMORTIZZATO PER L'ESECUZIONE DI n OPERAZIONI
+            vector[w] = ((tempo / k)- destroyTime[j]) / n; //TEMPO MEDIO E AMMORTIZZATO PER L'ESECUZIONE DI n OPERAZIONI
             
         }
 
@@ -170,11 +168,11 @@ int main()
         {
             time_sum += vector[z];
         }
-        tn = ((time_sum / measurePrec) - destroyTime[j]) * (double)MILION; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI PER L'ESECUZIONE DI n OPERAZIONI(VALORE CHE RESTITUIAMO)
+        tn = (time_sum / measurePrec); //MEDIA DEI TEMPI MEDI E AMMORTIZZATI PER L'ESECUZIONE DI n OPERAZIONI(VALORE CHE RESTITUIAMO)
 
         //CALCOLO DEVIAZIONE STANDARD TEMPO MEDIO E AMMORTIZZATO PER ESEGUIRE n OPERAZIONI
         double sommatoria = 0.00; //inizio del calcolo della deviazione
-
+        
         for (int i = 0; i < measurePrec; i++)
         {
             sommatoria = sommatoria + pow((vector[i] - tn), 2);
