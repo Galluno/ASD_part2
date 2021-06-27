@@ -253,7 +253,7 @@ void rbt()
                         //GENERO LA CHIAVE K IN MANIERA PSEUDO-CASUALE
                         int key = rand();
                         //CERCO K NELL'ALBERO
-                        if (rb_find(rbtsVector[k], rbtsVector[k]->root,key) == NULL)
+                        if (rb_find(rbtsVector[k], rbtsVector[k]->root,key) == rbtsVector[k]->leaf )
                         {
                             struct rb_node *n = new_tree_node(key, "");
                             rb_insert(rbtsVector[k], n);
