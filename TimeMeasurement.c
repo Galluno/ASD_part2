@@ -123,25 +123,6 @@ int main()
 
                   case 3:
 
-                    
-                    t = new_red_black_tree();
-                    for (int i = 0; i < n; i++)
-                    {
-                        //printf("lol\n");
-                        //GENERO LA CHIAVE K IN MANIERA PSEUDO-CASUALE
-                        int k = rand();
-                        //CERCO K NELL'ALBERO
-                        if (rb_find(t, t->root,k) == NULL)
-                        {
-                            struct rb_node *n = new_tree_node(k, "");
-                            rb_insert(t, n);
-                        }
-                    }
-                    clock_gettime(CLOCK_MONOTONIC, &end);
-                    rb_destroyTree(t, t->root); //deallocazione dell'albero
-                    free(t->leaf);
-                    free(t);
-
                     break; //end case3
                   
 

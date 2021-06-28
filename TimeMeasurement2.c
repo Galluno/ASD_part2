@@ -256,7 +256,7 @@ void rbt()
                         if (rb_find(rbtsVector[k], rbtsVector[k]->root,key) == rbtsVector[k]->leaf )
                         {
                             struct rb_node *n = new_tree_node(key, "");
-                            rb_insert(rbtsVector[k], n);
+                            rb_insert(rbtsVector[k], n,rbtsVector[k]->leaf,rbtsVector[k]->root);
                         }
                 }
 

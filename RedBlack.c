@@ -12,6 +12,8 @@ struct rb_node *parent;
 int color;
 };
 
+//Poichè in un red-black-tree le foglie non sono semplici nodi NULL, ma hanno anche un colore, ossia son
+//nere, abbiamo deciso di realizzare una struttura ad-hoc
 struct RBT{
 struct rb_node *root;
 struct rb_node *leaf;
@@ -30,86 +32,105 @@ return n;
 
 struct RBT *new_red_black_tree() {
 struct RBT *t = malloc(sizeof(struct RBT));
-struct rb_node *nil_node = malloc(sizeof(struct rb_node));
-nil_node->left = nil_node->right = nil_node->parent = NULL;
-nil_node->color = 0;
-nil_node->key = 0;
-nil_node->s="";
-t->leaf = nil_node;
+struct rb_node *null = malloc(sizeof(struct rb_node));
+null->left = null->right = null->parent = NULL;
+null->color = 0;
+null->key = 0;
+null->s="";
+t->leaf = null;
 t->root = t->leaf;
-
 return t;
 }
 //......................................................................................................................................................................
 
-void rb_left_rotate(struct RBT *t, struct rb_node *x) {
-struct rb_node *y = x->right;
-x->right = y->left;
-if(y->left != t->leaf) {
-  y->left->parent = x;
+void rb_left_rotate(struct RBT *t, struct rb_node *a) {
+struct rb_node *c = a->right;
+//c diventerà il nuovo a:
+c->parent = a->parent;
+//se a era la radice, ora c è la radice dell'albero
+if(a->parent == t->leaf) { 
+  t->root = c;
 }
-y->parent = x->parent;
-if(x->parent == t->leaf) { //x is root
-  t->root = y;
+//altrimenti, c diventerà figlio del parent di a
+else if(a == a->parent->left) { 
+  a->parent->left = c;
 }
-else if(x == x->parent->left) { //x is left child
-  x->parent->left = y;
+else { 
+  a->parent->right = c;
 }
-else { //x is right child
-  x->parent->right = y;
+
+//a diventerà il figlio sx di c:
+a->right = c->left;
+if(c->left != t->leaf) {  //il padre del figlio sx di c diventerà a,
+  c->left->parent = a;
 }
-y->left = x;
-x->parent = y;
+c->left = a;
+a->parent = c;
 }
 
 
-void rb_right_rotate(struct RBT *t, struct rb_node *x) {
-struct rb_node *y = x->left;
-x->left = y->right;
-if(y->right != t->leaf) {
-  y->right->parent = x;
+
+
+
+
+void rb_right_rotate(struct RBT *t, struct rb_node *a) {
+struct rb_node *b = a->left;
+//b diventerà il nuovo a:
+b->parent = a->parent;
+//se a era la radice, ora b è la radice dell'albero
+if(a->parent == t->leaf) { 
+  t->root = b;
 }
-y->parent = x->parent;
-if(x->parent == t->leaf) { //x is root
-  t->root = y;
+//altrimenti, b diventerà figlio del parent di a
+else if(a == a->parent->right) { 
+  a->parent->right = b;
 }
-else if(x == x->parent->right) { //x is left child
-  x->parent->right = y;
+else { 
+  a->parent->left = b;
 }
-else { //x is right child
-  x->parent->left = y;
+
+//a diventerà il figlio dx di b:
+a->left = b->right;
+if(b->right != t->leaf) {  //il padre del figlio dx di b diventerà a,
+  b->right->parent = a;
 }
-y->right = x;
-x->parent = y;
+b->right = a;
+a->parent = b;
 }
+
 //....................................................................................................................................................................
 
 
-void insertion_fixup(struct RBT *t, struct rb_node *z) {
-while(z->parent->color == 1) {
-  if(z->parent == z->parent->parent->left) { //z.parent is the left child
+void rbtFixup(struct RBT *t, struct rb_node *z) {
+while(z->parent->color == 1) { //continuiamo finchè il padre di z sarà rosso, e quindi avrò rosso figlio di rosso.
+                               //si noti che quando arriveremo alla radice dell' albero, il parent della foglia sarà del tipo
+                              //t->leaf, ossia nero, dunque anche in quel caso usciremo dal while e ricoloreremo la radice di nero
+  if(z->parent == z->parent->parent->left) { //CASO 1: il padre di z è figlio sx del nonno di z
 
-    struct rb_node *y = z->parent->parent->right; //uncle of z
+    struct rb_node *y = z->parent->parent->right; //introduco y, lo zio di z
 
-    if(y->color == 1) { //case 1
+    if(y->color == 1) { //caso 1.1: lo zio è rosso
       z->parent->color = 0;
       y->color = 0;
       z->parent->parent->color = 1;
       z = z->parent->parent;
     }
-    else { //case2 or case3
-      if(z == z->parent->right) { //case2
-        z = z->parent; //marked z.parent as new z
+    else { //caso 1.2: lo zio è nero
+      //agisco diversamente a seconda che z sia figlio dx o sx 
+      if(z == z->parent->right) { 
+        z = z->parent; 
         rb_left_rotate(t, z);
       }
-      //case3
-      z->parent->color = 0; //made parent black
-      z->parent->parent->color = 1; //made parent red
+      
+      z->parent->color = 0; 
+      z->parent->parent->color = 1; 
       rb_right_rotate(t, z->parent->parent);
     }
   }
-  else { //z.parent is the right child
-    struct rb_node *y = z->parent->parent->left; //uncle of z
+
+
+  else {   //CASO 2: il padre di z è figlio dx del nonno di z, simmetrico al precedente
+    struct rb_node *y = z->parent->parent->left; 
 
     if(y->color == 1) {
       z->parent->color = 0;
@@ -119,11 +140,11 @@ while(z->parent->color == 1) {
     }
     else {
       if(z == z->parent->left) {
-        z = z->parent; //marked z.parent as new z
+        z = z->parent; 
         rb_right_rotate(t, z);
       }
-      z->parent->color = 0; //made parent black
-      z->parent->parent->color = 1; //made parent red
+      z->parent->color = 0; 
+      z->parent->parent->color = 1; 
       rb_left_rotate(t, z->parent->parent);
     }
   }
@@ -133,31 +154,29 @@ t->root->color = 0;
 //....................................................................................................................................................................
 
 
-void rb_insert(struct RBT *t, struct rb_node *z) {
-struct rb_node* y = t->leaf; //variable for the parent of the added node
-struct rb_node* temp = t->root;
+void rb_insert(struct RBT *t, struct rb_node *z, struct rb_node *p, struct rb_node *trav) {  
+   if (trav == t->leaf){  //quando arrivo ad una foglia, inserisco z, inizializzando i puntatori da e verso z
+      z->parent = p;
+      z->right = t->leaf;
+      z->left = t->leaf;
+      if(p==t->leaf){  //allora il nuovo nodo sarà il primo nodo nell' albero
+         t->root=z;
+      }//altrimenti z sarà il nuovo figlio di p, devo però scoprire se figlio dx o sx
+      else if(z->key < p->key){ 
+         p->left = z;
+      }else{
+         p->right = z;
+      }
+     rbtFixup(t, z);
+      
+   }
 
-while(temp != t->leaf) {
-  y = temp;
-  if(z->key < temp->key)
-    temp = temp->left;
+
+  else if (z->key < trav->key)
+    rb_insert(t,z,trav,trav->left);
   else
-    temp = temp->right;
-}
-z->parent = y;
+    rb_insert(t,z,trav,trav->right);
 
-if(y == t->leaf) { //newly added node is root
-  t->root = z;
-}
-else if(z->key < y->key) //data of child is less than its parent, left child
-  y->left = z;
-else
-  y->right = z;
-
-z->right = t->leaf;
-z->left = t->leaf;
-
-insertion_fixup(t, z);
 }
 //...................................................................................................................................................................
 //PROCEDURA PER LA STAMPA
@@ -205,11 +224,11 @@ void rb_destroyTree(struct RBT *t, struct rb_node *trav){
 //PROCEDURA DI RICERCA
 struct rb_node* rb_find(struct RBT *t, struct rb_node *trav, int k)
 {
-    if(trav==t->leaf || trav->key==k) //if root->data is x then the element is found
+    if(trav==t->leaf || trav->key==k) 
         return trav;
-    else if(k>trav->key) // x is greater, so we will search the right subtree
+    else if(k>trav->key) 
         return rb_find(t, trav->right, k);
-    else //x is smaller than the data, so we will search the left subtree
+    else 
         return rb_find(t, trav->left, k);
 }
 //......................................................................................................................................
@@ -242,7 +261,7 @@ int main ()
           scanf("%i", &k);
           scanf("%s", v[i]);   //se faccio un insert ricavo la stringa da passare al nodo da stdin
           struct rb_node *n= new_tree_node(k,v[i]);
-          rb_insert(t,n);
+          rb_insert(t,n,t->leaf,t->root);
 	    
 	  //ricerca
       }else if(strcmp(op, "find")==0){
@@ -266,4 +285,5 @@ int main ()
   free(t);
   return 0;
 }
+
 */
