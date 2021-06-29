@@ -27,7 +27,9 @@ struct avl_node *new_avl_node(int data, char *v)
     return n;
 }
 
-//......................................................................................................
+//..............................................................................................................................................................................................................
+//ROTAZIONI E PROCEDURE DI SUPPORTO PER RIPRISTINARE LA PROPRIETA' DEGLI AVL CHE MI GARANTISCE IL BILANCIAMENTO
+
 int max(int a, int b)
 {
     if (a > b)
@@ -106,8 +108,8 @@ struct avl_node *avl_right_rotate(struct avl_node *root, struct avl_node *a)
     b->right = a;
     a->parent = b;
 
-    a->height = 1 + max(height(a->left), height(a->right));
-    b->height = 1 + max(height(b->left), height(b->right));
+    a->height = max(height(a->left), height(a->right)) + 1;
+    b->height = max(height(b->left), height(b->right)) + 1;
 
     return root;
 }
@@ -141,53 +143,56 @@ struct avl_node *avl_insert(struct avl_node *root, struct avl_node *n, struct av
             p->right = n;
         }
 
-        struct avl_node *z = n;
-        while (p != NULL)
+        struct avl_node *x = n;
+        while (p != NULL) //risalgo l'albero a partire dal parent del nodo aggiunto per ripristinare la proprietà che garantisce il bilanciamento
         {
             p->height = 1 + max(height(p->left), height(p->right));
 
-            struct avl_node *x = p->parent;
-
-            if (balance_factor(x) <-1 || balance_factor(x) > 1)
-            { 
-                if (p == x->left)
+            struct avl_node *grandParent = p->parent;
+            //verifico se il nonno di z è sbilanciato:
+            if (balance_factor(grandParent) < -1 || balance_factor(grandParent) > 1)
+            {
+                //se lo è agisco in maniera diversa a seconda che p sia figlio dx o sx
+                if (p == grandParent->left)
                 {
-                    if (z == x->left->left) //case 1
-                        root = avl_right_rotate(root, x);
+                    if (x == grandParent->left->left)
+                        root = avl_right_rotate(root, grandParent);
 
-                    else if (z == x->left->right)
-                    { //case 3
+                    else if (x == grandParent->left->right)
+                    {
                         root = avl_left_rotate(root, p);
-                        root = avl_right_rotate(root, x);
+                        root = avl_right_rotate(root, grandParent);
                     }
                 }
-                else if (p == x->right)
+                else if (p == grandParent->right)
                 {
-                    if (z == x->right->right) //case 2
-                        root = avl_left_rotate(root, x);
+                    if (x == grandParent->right->right)
+                        root = avl_left_rotate(root, grandParent);
 
-                    else if (z == x->right->left)
-                    { //case 4
+                    else if (x == grandParent->right->left)
+                    {
                         root = avl_right_rotate(root, p);
-                        root = avl_left_rotate(root, x);
+                        root = avl_left_rotate(root, grandParent);
                     }
                 }
                 break;
             }
+            //risalgo l'albero
             p = p->parent;
-            z = z->parent;
+            x = x->parent;
         }
 
         return root;
     }
 
     else if (n->key < trav->key)
-        avl_insert(root, n, trav, trav->left);
+        return avl_insert(root, n, trav, trav->left);
     else
-        avl_insert(root, n, trav, trav->right);
+        return avl_insert(root, n, trav, trav->right);
 }
 
-//...................................................................................................................
+//................................................................................................................................................................................................................
+//RICERCA:
 struct avl_node *avl_find(struct avl_node *trav, int k)
 {
     if (trav == NULL || trav->key == k)
@@ -198,9 +203,9 @@ struct avl_node *avl_find(struct avl_node *trav, int k)
         return avl_find(trav->left, k);
 }
 
-//...................................................................................................................................................................
+//.............................................................................................................................................................................................................
 
-//PROCEDURA PER LA STAMPA
+//PROCEDURA PER LA STAMPA:
 
 void avl_show(struct avl_node *trav)
 
@@ -221,13 +226,12 @@ void avl_show(struct avl_node *trav)
 
         for (int i = 0; trav->s[i] != '\0'; i++)
 
-	     {
+        {
 
-	         printf ("%c", trav->s[i]);
+            printf("%c", trav->s[i]);
+        }
 
-	     }
-
-      printf (":%d ", trav->height);
+        printf(":%d ", trav->height);
 
         //chiamata di stampa sul figlio sx e dx
 
@@ -236,21 +240,25 @@ void avl_show(struct avl_node *trav)
         avl_show(trav->right);
     }
 }
-//..................................................................................................
+//...............................................................................................................................................................................................................
 //DEALLOCAZIONE DELL' ALBERO
 
-void avl_destroyTree(struct avl_node *root ){
-    if(root == NULL){
+void avl_destroyTree(struct avl_node *root)
+{
+    if (root == NULL)
+    {
         return;
-    }else{
-    avl_destroyTree(root->right);
-    avl_destroyTree(root->left);
-    free(root);
+    }
+    else
+    {
+        avl_destroyTree(root->right);
+        avl_destroyTree(root->left);
+        free(root);
     }
 }
 
-
-
+//................................................................................................................................................................................................................
+/*
 int main()
 {
 
@@ -301,3 +309,4 @@ int main()
     avl_destroyTree(root); //deallocazione dell'albero
     return 0;
 }
+*/

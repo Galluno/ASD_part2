@@ -6,7 +6,7 @@
 #include <math.h>
 #include "BSTrees.h"
 #include "RedBlack.c"
-#include "AVL.c"
+#include "AVL2.c"
 #define A 1000    //A=numero di operazioni minime sull' albero= Nmin    1000
 #define Emax 0.01 //Errore relativo massimo
 #define BILLION 1000000000L
@@ -163,7 +163,8 @@ void avlTree()
                     //CERCO K NELL'ALBERO
                     if (avl_find(avlRootsVector[k], key) == NULL)
                     {
-                        avlRootsVector[k] = avl_insert(avlRootsVector[k], key, ""); //SE NON LA TROVO LA INSERISCO
+                        struct avl_node *n = new_avl_node(k, "");
+                        avlRootsVector[k] = avl_insert(avlRootsVector[k], n, NULL, avlRootsVector[k]); //SE NON LA TROVO LA INSERISCO
                     }
                 }
 
