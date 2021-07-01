@@ -6,7 +6,7 @@
 #include <math.h>
 #include "BSTrees.h"
 #include "RedBlack.c"
-#include "AVL2.c"
+#include "AVL.c"
 #define A 1000    //A=numero di operazioni minime sull' albero= Nmin    1000
 #define Emax 0.01 //Errore relativo massimo
 #define BILLION 1000000000L
@@ -30,11 +30,11 @@ void bst()
     double n = 10000;      //numero di operazioni sull'albero
     int measurePrec = 100; //indice di precisione della misura ~ 100
 
-    double tn = 0; //TEMPO MEDIO MISURATO PER ESEGUIRE n OPERAZIONI SULL ALBERO
+    double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
 
-    //DETERMINO IL NUMERO DI OPERAZIONI DA ESEGURE IN UN ITERAZIONE DEL FOR PIU ESTERNO
-    double time_sum = 0;        //somma dei tempi medi misurati per eseguire n operazioni
+    
+    double time_sum = 0;        //somma dei tempi medi eammortizzati misurati per eseguire n operazioni
     double vector[measurePrec]; //OGNI ELEMENTO E' LA MISURA DEL TEMPO IMPIEGATO PER ESEGUIRE n OPERAZIONI(ESCLUDIAMO IL TEMPO PER ELIMINARE L'ALBERO)
 
     for (int w = 0; w < measurePrec; w++)
@@ -51,8 +51,8 @@ void bst()
         int k = 0;
 
         double tempo = 0;
-        //STIMIAMO IL TEMPO PER ELIMINARE UN ALBERO COSTRUITO CON n OPERAZIONI(salviamo le misure stimate al variare di n in un array di 100 elemeni, destroyTime[])
-        struct node *bstRootsVector[100];
+      
+        struct node *bstRootsVector[100];  ////array di supporto sovradimensionato per memoriazzare i puntatori alla radici degli alberi che creo nel do-while, in modo da deallocarli successivamente
         clock_gettime(CLOCK_MONOTONIC, &start);
 
         do
@@ -106,6 +106,8 @@ void bst()
     }
     D = sqrt(sommatoria / measurePrec); //DEVIAZIONE STANDARD
 
+    printf("La media è: %lf\n",tn); //Stampa a video della media dei tempi medi e ammortizzati, valore che restituimao in TimeMeasurement2.c per n=10000
+
     printf("La deviazione è: %lf\n",D); //Stampa a video la deviazione standard
 }
 
@@ -118,11 +120,11 @@ void avlTree()
     double n = 10000;      //numero di operazioni sull'albero
     int measurePrec = 100; //indice di precisione della misura ~ 100
 
-    double tn = 0; //TEMPO MEDIO MISURATO PER ESEGUIRE n OPERAZIONI SULL ALBERO
+    double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
 
-    //DETERMINO IL NUMERO DI OPERAZIONI DA ESEGURE IN UN ITERAZIONE DEL FOR PIU ESTERNO
-    double time_sum = 0;        //somma dei tempi medi misurati per eseguire n operazioni
+    
+    double time_sum = 0;        //somma dei tempi medi eammortizzati misurati per eseguire n operazioni
     double vector[measurePrec]; //OGNI ELEMENTO E' LA MISURA DEL TEMPO IMPIEGATO PER ESEGUIRE n OPERAZIONI(ESCLUDIAMO IL TEMPO PER ELIMINARE L'ALBERO)
 
     for (int w = 0; w < measurePrec; w++)
@@ -139,8 +141,8 @@ void avlTree()
         int k = 0;
 
         double tempo = 0;
-        //STIMIAMO IL TEMPO PER ELIMINARE UN ALBERO COSTRUITO CON n OPERAZIONI(salviamo le misure stimate al variare di n in un array di 100 elemeni, destroyTime[])
-        struct avl_node *avlRootsVector[100];
+        
+        struct avl_node *avlRootsVector[100];  //array di supporto sovradimensionato per memoriazzare i puntatori alla radici degli alberi che creo nel do-while, in modo da deallocarli successivamente
         clock_gettime(CLOCK_MONOTONIC, &start);
 
         do
@@ -176,7 +178,7 @@ void avlTree()
         }
 
         vector[w] = (tempo / k) / n; //TEMPO MEDIO E AMMORTIZZATO PER L'ESECUZIONE DI n OPERAZIONI(senza il tempo di deallocazione dell'albero creato)
-        printf("%i   %lf\n", (int)floor(n), vector[w]);
+        printf("%i   %lf\n", (int)floor(n), vector[w]); //stampa a video del tempo medio e ammortizzato
     }
 
     //CALCOLO TEMPO MEDIO E AMMORTIZZAT0 PER L'ESECUZIONE DI n OPERAZIONI, tn
@@ -195,6 +197,8 @@ void avlTree()
     }
     D = sqrt(sommatoria / measurePrec); //DEVIAZIONE STANDARD
 
+    printf("La media è: %lf\n",tn); //Stampa a video della media dei tempi medi e ammortizzati, valore che restituimao in TimeMeasurement2.c per n=10000
+
     printf("La deviazione è: %lf\n",D); //Stampa a video la deviazione standar
 }
 
@@ -207,10 +211,10 @@ void rbt()
     double n = 10000;      //numero di operazioni sull'albero
     int measurePrec = 100; //indice di precisione della misura ~ 100
 
-    double tn = 0; //TEMPO MEDIO MISURATO PER ESEGUIRE n OPERAZIONI SULL ALBERO
+    double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
 
-    double time_sum = 0;        //somma dei tempi medi misurati per eseguire n operazioni
+    double time_sum = 0;        //somma dei tempi medi eammortizzati misurati per eseguire n operazioni
     double vector[measurePrec]; //OGNI ELEMENTO E' LA MISURA DEL TEMPO IMPIEGATO PER ESEGUIRE n OPERAZIONI(ESCLUDIAMO IL TEMPO PER ELIMINARE L'ALBERO)
 
     for (int w = 0; w < measurePrec; w++)
@@ -227,14 +231,14 @@ void rbt()
         int k = 0;
 
         double tempo = 0;
-        //STIMIAMO IL TEMPO PER ELIMINARE UN ALBERO COSTRUITO CON n OPERAZIONI(salviamo le misure stimate al variare di n in un array di 100 elemeni, destroyTime[])
-        struct RBT *rbtsVector[100];
+        
+        struct RBT *rbtsVector[100]; //array di supporto sovradimensionato per memoriazzare i puntatori alla radici degli alberi che creo nel do-while, in modo da deallocarli successivamente
         clock_gettime(CLOCK_MONOTONIC, &start);
 
         do
         {
 
-            //INIZIALIZZO ROOT DEL MIO ALBERO
+            //Salvo il puntatore all' albero rb che andrò a costruire nel mio array di supporto, in modo da andarlo poi a deallocare fuori dal do-while
             rbtsVector[k] = new_red_black_tree();
             for (int i = 0; i < n; i++)
             {
@@ -267,7 +271,7 @@ void rbt()
         }
 
         vector[w] = (tempo / k) / n; //TEMPO MEDIO E AMMORTIZZATO PER L'ESECUZIONE DI n OPERAZIONI(senza il tempo di deallocazione dell'albero creato)
-        printf("%i   %lf\n", (int)floor(n), vector[w]);
+        printf("%i   %lf\n", (int)floor(n), vector[w]); //stampa a video del tempo medio e ammortizzato
     }
 
     //CALCOLO TEMPO MEDIO E AMMORTIZZAT0 PER L'ESECUZIONE DI n OPERAZIONI, tn
@@ -275,7 +279,7 @@ void rbt()
     {
         time_sum += vector[z];
     }
-    tn = (time_sum / measurePrec); //media dei tempi medi e ammortizzati per l'esecuzione di n operazioni
+    tn = (time_sum / measurePrec); //media dei tempi medi e ammortizzati per l'esecuzione di n operazioni(valore che restituiamo in TimeMeasurement2.c)
 
     //CALCOLO DEVIAZIONE STANDARD TEMPO MEDIO E AMMORTIZZATO PER ESEGUIRE n OPERAZIONI
     double sommatoria = 0.00; //inizio del calcolo della deviazione
@@ -285,6 +289,8 @@ void rbt()
         sommatoria = sommatoria + pow((vector[i] - tn), 2);
     }
     D = sqrt(sommatoria / measurePrec); //DEVIAZIONE STANDARD
+
+    printf("La media è: %lf\n",tn); //Stampa a video della media dei tempi medi e ammortizzati, valore che restituimao in TimeMeasurement2.c per n=10000
 
     printf("La deviazione è: %lf\n",D); //Stampa a video la deviazione standar
 }

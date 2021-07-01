@@ -6,7 +6,7 @@
 #include <math.h>
 #include "BSTrees.h"
 #include "RedBlack.c"
-#include "AVL2.c"
+#include "AVL.c"
 #define A 1000    //A=numero di operazioni minime sull' albero= Nmin    1000
 #define Emax 0.01 //Errore relativo massimo
 #define BILLION 1000000000L
@@ -31,13 +31,13 @@ void bst()
     double n;                                     //numero di operazioni sull'albero
     int measurePrec = 100;                        //indice di precisione della misura ~ 100
 
-    double tn = 0; //TEMPO MEDIO MISURATO PER ESEGUIRE n OPERAZIONI SULL ALBERO
+    double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
 
     for (int j = 0; j <= 99; j++)
     {
         n = A * pow(B, j);          //DETERMINO IL NUMERO DI OPERAZIONI DA ESEGURE IN UN ITERAZIONE DEL FOR PIU ESTERNO
-        double time_sum = 0;        //somma dei tempi medi misurati per eseguire n operazioni
+        double time_sum = 0;        //somma dei tempi medi e ammortizzati misurati per eseguire n operazioni
         double vector[measurePrec]; //OGNI ELEMENTO E' LA MISURA DEL TEMPO IMPIEGATO PER ESEGUIRE n OPERAZIONI(ESCLUDIAMO IL TEMPO PER ELIMINARE L'ALBERO)
 
         for (int w = 0; w < measurePrec; w++)
@@ -54,8 +54,8 @@ void bst()
             int k = 0;
 
             double tempo = 0;
-            //STIMIAMO IL TEMPO PER ELIMINARE UN ALBERO COSTRUITO CON n OPERAZIONI(salviamo le misure stimate al variare di n in un array di 100 elemeni, destroyTime[])
-            struct node *bstRootsVector[100];
+            
+            struct node *bstRootsVector[100];  //array di supporto sovradimensionato per memoriazzare i puntatori alla radici degli alberi che creo nel do-while, in modo da deallocarli successivamente
             clock_gettime(CLOCK_MONOTONIC, &start);
 
             do
@@ -123,13 +123,13 @@ void avlTree()
     double n;                                     //numero di operazioni sull'albero
     int measurePrec = 100;                        //indice di precisione della misura ~ 100
 
-    double tn = 0; //TEMPO MEDIO MISURATO PER ESEGUIRE n OPERAZIONI SULL ALBERO
+    double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
 
     for (int j = 0; j <= 99; j++)
     {
         n = A * pow(B, j);          //DETERMINO IL NUMERO DI OPERAZIONI DA ESEGURE IN UN ITERAZIONE DEL FOR PIU ESTERNO
-        double time_sum = 0;        //somma dei tempi medi misurati per eseguire n operazioni
+        double time_sum = 0;      //somma dei tempi medi e ammortizzati misurati per eseguire n operazioni
         double vector[measurePrec]; //OGNI ELEMENTO E' LA MISURA DEL TEMPO IMPIEGATO PER ESEGUIRE n OPERAZIONI(ESCLUDIAMO IL TEMPO PER ELIMINARE L'ALBERO)
 
         for (int w = 0; w < measurePrec; w++)
@@ -146,8 +146,8 @@ void avlTree()
             int k = 0;
 
             double tempo = 0;
-            //STIMIAMO IL TEMPO PER ELIMINARE UN ALBERO COSTRUITO CON n OPERAZIONI(salviamo le misure stimate al variare di n in un array di 100 elemeni, destroyTime[])
-            struct avl_node *avlRootsVector[100];
+            
+            struct avl_node *avlRootsVector[100];  //array di supporto sovradimensionato per memoriazzare i puntatori alla radici degli alberi che creo nel do-while, in modo da deallocarli successivamente
             clock_gettime(CLOCK_MONOTONIC, &start);
 
             do
@@ -216,13 +216,13 @@ void rbt()
     double n;                                     //numero di operazioni sull'albero
     int measurePrec = 100;                        //indice di precisione della misura ~ 100
 
-    double tn = 0; //TEMPO MEDIO MISURATO PER ESEGUIRE n OPERAZIONI SULL ALBERO
+    double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
 
     for (int j = 0; j <= 99; j++)
     {
         n = A * pow(B, j);          //DETERMINO IL NUMERO DI OPERAZIONI DA ESEGURE IN UN ITERAZIONE DEL FOR PIU ESTERNO
-        double time_sum = 0;        //somma dei tempi medi misurati per eseguire n operazioni
+        double time_sum = 0;        //somma dei tempi medi e ammortizzati misurati per eseguire n operazioni
         double vector[measurePrec]; //OGNI ELEMENTO E' LA MISURA DEL TEMPO IMPIEGATO PER ESEGUIRE n OPERAZIONI(ESCLUDIAMO IL TEMPO PER ELIMINARE L'ALBERO)
 
         for (int w = 0; w < measurePrec; w++)
@@ -239,14 +239,14 @@ void rbt()
             int k = 0;
 
             double tempo = 0;
-            //STIMIAMO IL TEMPO PER ELIMINARE UN ALBERO COSTRUITO CON n OPERAZIONI(salviamo le misure stimate al variare di n in un array di 100 elemeni, destroyTime[])
-            struct RBT *rbtsVector[100];
+         
+            struct RBT *rbtsVector[100];  //array di supporto sovradimensionato per memoriazzare i puntatori agli alberi che creo nel do-while, in modo da deallocarli successivamente
             clock_gettime(CLOCK_MONOTONIC, &start);
 
             do
             {
 
-                //INIZIALIZZO ROOT DEL MIO ALBERO
+                //Salvo il puntatore all' albero rb che andrò a costruire nel mio array di supporto, in modo da andarlo poi a deallocare fuori dal do-while
                 rbtsVector[k] = new_red_black_tree();
                 for (int i = 0; i < n; i++)
                 {
