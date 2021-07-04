@@ -126,14 +126,14 @@ struct avl_node *avl_insert(struct avl_node *root, struct avl_node *n, struct av
 {
 
     if (trav == NULL)
-    { //quando arrivo ad una foglia, inserisco z, inizializzando i puntatori da e verso z
+    { //quando arrivo ad una foglia, inserisco n, inizializzando i puntatori da e verso n
         n->parent = p;
         n->right = NULL;
         n->left = NULL;
         if (p == NULL)
         { //allora il nuovo nodo sarà il primo nodo nell' albero
             root = n;
-        } //altrimenti z sarà il nuovo figlio di p, devo però scoprire se figlio dx o sx
+        } //altrimenti n sarà il nuovo figlio di p, devo però scoprire se figlio dx o sx
         else if (n->key < p->key)
         {
             p->left = n;
@@ -142,7 +142,11 @@ struct avl_node *avl_insert(struct avl_node *root, struct avl_node *n, struct av
         {
             p->right = n;
         }
-
+        
+        /*RIPRISTINO DELLA PROPRIETA' CHE GARANTISCE IL BILANCIAMENTO:
+        Dopo aver inserito normalmente n, come in un bst, ci occupiamo di ripristinare la proprietà che garantisce 
+        il bilanciamento dell' albero.
+        */
         struct avl_node *x = n;
         while (p != NULL) //risalgo l'albero a partire dal parent del nodo aggiunto per ripristinare la proprietà che garantisce il bilanciamento
         {
