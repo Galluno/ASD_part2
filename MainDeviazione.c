@@ -23,17 +23,77 @@ long getResolution()
 }
 //...............................................................................................................................................................................
 
+void plot(int treeType, double *y, int measurePrec, double mean, double deviation) //1-bst, 2-avl, 3-rbt
+{
+    char strTitle[16];
+
+    switch (treeType)
+    {
+    case 1:
+        strcat(strTitle, "set title \"BST\"");
+        break;
+    case 2:
+        strcat(strTitle, "set title \"AVL\"");
+        break;
+    case 3:
+        strcat(strTitle, "set title \"RBT\"");
+        break;
+    }
+
+    char *commands[] = {
+        strTitle,
+        "set xlabel \"# iterazione\"",
+        "set ylabel \"Tempo medio e ammortizzato\"",
+        "set autoscale",
+        "plot 'data' with points pointtype 7, 'mean' with lines, '+σ' with lines, '-σ' with lines"};
+
+    FILE *temp = fopen("data", "w");
+    FILE *temp1 = fopen("mean", "w");
+    FILE *temp2 = fopen("+σ", "w");
+    FILE *temp3 = fopen("-σ", "w");
+
+    FILE *gnuplotPipe = popen("gnuplot -persistent", "w"); //-----------------------------------------------
+
+    double x[measurePrec];
+
+    for (int i = 0; i < measurePrec; i++)
+    {
+        x[i] = i;
+    }
+
+    for (int i = 0; i < measurePrec; i++)
+    {
+        fprintf(temp, "%lf %lf \n", x[i], y[i]);
+    }
+    for (int i = 0; i < measurePrec; i++)
+    {
+        fprintf(temp1, "%lf %lf \n", x[i], mean);
+    }
+    for (int i = 0; i < measurePrec; i++)
+    {
+        fprintf(temp2, "%lf %lf \n", x[i], mean + deviation);
+    }
+    for (int i = 0; i < measurePrec; i++)
+    {
+        fprintf(temp3, "%lf %lf \n", x[i], mean - deviation);
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        fprintf(gnuplotPipe, "%s \n", commands[i]); //Send commands to gnuplot one by one.
+    }
+}
+
 //TEMPI PER UN BST:
 void bst()
 {
 
     double n = 10000;      //numero di operazioni sull'albero
-    int measurePrec = 100; //indice di precisione della misura ~ 100
+    int measurePrec = 1000; //indice di precisione della misura ~ 100
 
     double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
 
-    
     double time_sum = 0;        //somma dei tempi medi eammortizzati misurati per eseguire n operazioni
     double vector[measurePrec]; //OGNI ELEMENTO E' LA MISURA DEL TEMPO IMPIEGATO PER ESEGUIRE n OPERAZIONI(ESCLUDIAMO IL TEMPO PER ELIMINARE L'ALBERO)
 
@@ -51,8 +111,8 @@ void bst()
         int k = 0;
 
         double tempo = 0;
-      
-        struct node *bstRootsVector[100];  ////array di supporto sovradimensionato per memoriazzare i puntatori alla radici degli alberi che creo nel do-while, in modo da deallocarli successivamente
+
+        struct node *bstRootsVector[100]; ////array di supporto sovradimensionato per memoriazzare i puntatori alla radici degli alberi che creo nel do-while, in modo da deallocarli successivamente
         clock_gettime(CLOCK_MONOTONIC, &start);
 
         do
@@ -106,9 +166,11 @@ void bst()
     }
     D = sqrt(sommatoria / measurePrec); //DEVIAZIONE STANDARD
 
-    printf("La media è: %lf\n",tn); //Stampa a video della media dei tempi medi e ammortizzati, valore che restituimao in TimeMeasurement2.c per n=10000
+    printf("La media è: %lf\n", tn); //Stampa a video della media dei tempi medi e ammortizzati, valore che restituimao in TimeMeasurement2.c per n=10000
 
-    printf("La deviazione è: %lf\n",D); //Stampa a video la deviazione standard
+    printf("La deviazione è: %lf\n", D); //Stampa a video la deviazione standard
+
+    plot(1, vector, measurePrec, tn, D);
 }
 
 //...............................................................................................................................................................................
@@ -118,12 +180,11 @@ void avlTree()
 {
 
     double n = 10000;      //numero di operazioni sull'albero
-    int measurePrec = 100; //indice di precisione della misura ~ 100
+    int measurePrec = 1000; //indice di precisione della misura ~ 100
 
     double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
 
-    
     double time_sum = 0;        //somma dei tempi medi eammortizzati misurati per eseguire n operazioni
     double vector[measurePrec]; //OGNI ELEMENTO E' LA MISURA DEL TEMPO IMPIEGATO PER ESEGUIRE n OPERAZIONI(ESCLUDIAMO IL TEMPO PER ELIMINARE L'ALBERO)
 
@@ -141,8 +202,8 @@ void avlTree()
         int k = 0;
 
         double tempo = 0;
-        
-        struct avl_node *avlRootsVector[100];  //array di supporto sovradimensionato per memoriazzare i puntatori alla radici degli alberi che creo nel do-while, in modo da deallocarli successivamente
+
+        struct avl_node *avlRootsVector[100]; //array di supporto sovradimensionato per memoriazzare i puntatori alla radici degli alberi che creo nel do-while, in modo da deallocarli successivamente
         clock_gettime(CLOCK_MONOTONIC, &start);
 
         do
@@ -177,7 +238,7 @@ void avlTree()
             avl_destroyTree(avlRootsVector[q]);
         }
 
-        vector[w] = (tempo / k) / n; //TEMPO MEDIO E AMMORTIZZATO PER L'ESECUZIONE DI n OPERAZIONI(senza il tempo di deallocazione dell'albero creato)
+        vector[w] = (tempo / k) / n;                    //TEMPO MEDIO E AMMORTIZZATO PER L'ESECUZIONE DI n OPERAZIONI(senza il tempo di deallocazione dell'albero creato)
         printf("%i   %lf\n", (int)floor(n), vector[w]); //stampa a video del tempo medio e ammortizzato
     }
 
@@ -197,9 +258,11 @@ void avlTree()
     }
     D = sqrt(sommatoria / measurePrec); //DEVIAZIONE STANDARD
 
-    printf("La media è: %lf\n",tn); //Stampa a video della media dei tempi medi e ammortizzati, valore che restituimao in TimeMeasurement2.c per n=10000
+    printf("La media è: %lf\n", tn); //Stampa a video della media dei tempi medi e ammortizzati, valore che restituimao in TimeMeasurement2.c per n=10000
 
-    printf("La deviazione è: %lf\n",D); //Stampa a video la deviazione standar
+    printf("La deviazione è: %lf\n", D); //Stampa a video la deviazione standar
+
+    plot(2, vector, measurePrec, tn, D);
 }
 
 //...............................................................................................................................................................................
@@ -209,7 +272,7 @@ void rbt()
 {
 
     double n = 10000;      //numero di operazioni sull'albero
-    int measurePrec = 100; //indice di precisione della misura ~ 100
+    int measurePrec = 1000; //indice di precisione della misura ~ 100
 
     double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
@@ -231,7 +294,7 @@ void rbt()
         int k = 0;
 
         double tempo = 0;
-        
+
         struct RBT *rbtsVector[100]; //array di supporto sovradimensionato per memoriazzare i puntatori alla radici degli alberi che creo nel do-while, in modo da deallocarli successivamente
         clock_gettime(CLOCK_MONOTONIC, &start);
 
@@ -270,7 +333,7 @@ void rbt()
             free(rbtsVector[q]);
         }
 
-        vector[w] = (tempo / k) / n; //TEMPO MEDIO E AMMORTIZZATO PER L'ESECUZIONE DI n OPERAZIONI(senza il tempo di deallocazione dell'albero creato)
+        vector[w] = (tempo / k) / n;                    //TEMPO MEDIO E AMMORTIZZATO PER L'ESECUZIONE DI n OPERAZIONI(senza il tempo di deallocazione dell'albero creato)
         printf("%i   %lf\n", (int)floor(n), vector[w]); //stampa a video del tempo medio e ammortizzato
     }
 
@@ -290,9 +353,11 @@ void rbt()
     }
     D = sqrt(sommatoria / measurePrec); //DEVIAZIONE STANDARD
 
-    printf("La media è: %lf\n",tn); //Stampa a video della media dei tempi medi e ammortizzati, valore che restituimao in TimeMeasurement2.c per n=10000
+    printf("La media è: %lf\n", tn); //Stampa a video della media dei tempi medi e ammortizzati, valore che restituimao in TimeMeasurement2.c per n=10000
 
-    printf("La deviazione è: %lf\n",D); //Stampa a video la deviazione standar
+    printf("La deviazione è: %lf\n", D); //Stampa a video la deviazione standard
+
+    plot(3, vector, measurePrec, tn, D);
 }
 //..................................................................................................................................................................................................................
 int main()
