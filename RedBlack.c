@@ -42,7 +42,13 @@ t->root = t->leaf;
 return t;
 }
 //......................................................................................................................................................................
+/*ROTAZIONI PER RIPRISTINARE LA PROPRIETA' DEI RED-BLACK CHE MI GARANTISCE IL BILANCIAMENTO
+  
+  Nota: Come nel caso degli avl, anche qui le rotazioni possono modificare la radice dell' albero... tuttavia in questo caso la radice di t sarà contenuta della struct dedicata, 
+  dunque se la radice dovesse essere modificata, in quanto è il nodo che funge da perno nella rotazione, semplicemente aggiorniamo t->root
 
+
+*/
 void rb_left_rotate(struct RBT *t, struct rb_node *a) {
 struct rb_node *c = a->right;
 //c diventerà il nuovo a:
@@ -99,12 +105,27 @@ a->parent = b;
 }
 
 //....................................................................................................................................................................
+/*PROCEDURA PER RIPRISTINARE LE PROPRIETA' DEI RED-BLACK CHE GARANTISCONO IL BILANCIAMENTO DELL' ALBERO
 
+  Come si può vedere nella procedura di inserimento rb_insert(), l'inserimento del nuovo nodo avviene praticamente come nei BST, il nuovo nodo viene poi colorato di rosso.
+  Successivamente richiamiamo la procedura rbtFixup() a cui passiamo in input il nuovo nodo aggiunto, che sarà z, e l'albero.
+  
+  L'idea è la seguente
+  -Ad ogni passo o avremmo risolto il problema o lo avremmo spostato più in alto nell'albero
+  -Procediamo in modo diverso a seconda del caso in cui ci troviamo, finchè o risolviamo il problema o risaliamo l'albero fino in cima.
+
+  Ad ogni passo, dato z, ci troveremo in uno dei 6 casi possibili:
+  
+  Caso 1: guarda sia su wikipedia che sulla pagina dei rbt
+
+
+*/
 
 void rbtFixup(struct RBT *t, struct rb_node *z) {
-while(z->parent->color == 1) { //continuiamo finchè il padre di z sarà rosso, e quindi avrò rosso figlio di rosso.
-                               //si noti che quando arriveremo alla radice dell' albero, il parent della foglia sarà del tipo
-                              //t->leaf, ossia nero, dunque anche in quel caso usciremo dal while e ricoloreremo la radice di nero
+while(z->parent->color == 1) { /*  continuiamo finchè il padre di z sarà rosso, e quindi avrò rosso figlio di rosso.
+                                   si noti che quando arriveremo alla radice dell' albero, il parent della foglia sarà del tipo
+                                   t->leaf, ossia nero, dunque anche in quel caso usciremo dal while e ricoloreremo la radice di nero
+                               */
   if(z->parent == z->parent->parent->left) { //CASO 1: il padre di z è figlio sx del nonno di z
 
     struct rb_node *y = z->parent->parent->right; //introduco y, lo zio di z
