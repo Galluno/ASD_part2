@@ -29,7 +29,7 @@ void bst()
 
     double B = exp((log(1000000) - log(A)) / 99); //1 mln = numero massimo operazioni sull' albero = Nmaxn   1000000
     double n;                                     //numero di operazioni sull'albero
-    int measurePrec = 100;                        //indice di precisione della misura ~ 100
+    int measurePrec = 250;                        //indice di precisione della misura ~ 100
 
     double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
@@ -121,7 +121,7 @@ void avlTree()
 
     double B = exp((log(1000000) - log(A)) / 99); //1 mln = numero massimo operazioni sull' albero = Nmaxn   1000000
     double n;                                     //numero di operazioni sull'albero
-    int measurePrec = 100;                        //indice di precisione della misura ~ 100
+    int measurePrec = 250;                        //indice di precisione della misura ~ 100
 
     double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
@@ -214,7 +214,7 @@ void rbt()
 
     double B = exp((log(1000000) - log(A)) / 99); //1 mln = numero massimo operazioni sull' albero = Nmaxn   1000000
     double n;                                     //numero di operazioni sull'albero
-    int measurePrec = 100;                        //indice di precisione della misura ~ 100
+    int measurePrec = 250;                        //indice di precisione della misura ~ 100
 
     double tn = 0; //MEDIA DEI TEMPI MEDI E AMMORTIZZATI MISURATI PER ESEGUIRE n OPERAZIONI SULL ALBERO
     double D = 0;  //DEVIAZIONE STANDARD
