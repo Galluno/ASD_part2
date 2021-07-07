@@ -114,9 +114,9 @@ a->parent = b;
   -Ad ogni passo o avremmo risolto il problema o lo avremmo spostato più in alto nell'albero
   -Procediamo in modo diverso a seconda del caso in cui ci troviamo, finchè o risolviamo il problema o risaliamo l'albero fino in cima.
 
-  Ad ogni passo, dato z, ci troveremo in uno dei 6 casi possibili:
+  Ad ogni passo, dato z, ci troveremo in uno dei 6 casi possibili, tramite il primo if nel while verifichiamo se il padre di z è figlio sx, e in quel caso rientreremo in uno dei primi
+  3 casi, gli altri 3 sono praticamente simmetrici
   
-  Caso 1: guarda sia su wikipedia che sulla pagina dei rbt
 
 
 */
@@ -126,23 +126,40 @@ while(z->parent->color == 1) { /*  continuiamo finchè il padre di z sarà rosso
                                    si noti che quando arriveremo alla radice dell' albero, il parent della foglia sarà del tipo
                                    t->leaf, ossia nero, dunque anche in quel caso usciremo dal while e ricoloreremo la radice di nero
                                */
-  if(z->parent == z->parent->parent->left) { //CASO 1: il padre di z è figlio sx del nonno di z
+  if(z->parent == z->parent->parent->left) {  //Primi 3 casi, il parent di z è filgio dx
 
-    struct rb_node *y = z->parent->parent->right; //introduco y, lo zio di z
+    struct rb_node *u = z->parent->parent->right;  //u=zio di z
 
-    if(y->color == 1) { //caso 1.1: lo zio è rosso
+    /*Caso 1: u è rosso
+       -coloriamo di nero il parent e lo zio di z, cosi risolviamo il problema rosso figlio di rosso
+        NOTA:coloriamo di nero anche lo zio perchè quando coloriamo di nero un nodo a sx/dx del parent dobbimao ricolorare di nero anche un nodo dalla parte
+             opposta, in modo da mantenere lo stesso numero di nodi neri su ogni percorso dal parent a una foglia
+       -coloriamo di rosso il nonno di z, per mantenere lo stesso numero di nodi neri;
+        Facendo cio però il problema si potrebbe essere spostato verso l'alto dunque interiamo sul nonno di z
+       
+    */
+    if(u->color == 1) {
       z->parent->color = 0;
-      y->color = 0;
+      u->color = 0;
       z->parent->parent->color = 1;
       z = z->parent->parent;
     }
-    else { //caso 1.2: lo zio è nero
-      //agisco diversamente a seconda che z sia figlio dx o sx 
+    else { 
+      /*Caso 2: u è nero, e si trova dalla stessa parte di z, in questo caso a dx.
+        -applico una rotazione a sx con perno il parent di z per ricondurmi al caso 1, con l'unica differenza che lo zio è nero
+        -procedo come nel caso 3
+
+    */
       if(z == z->parent->right) { 
         z = z->parent; 
         rb_left_rotate(t, z);
       }
-      
+     /*Caso 3: u è nero, e si trova dalla parte opposta a z(cioè z è figlio sx mentre lo zio è figlio dx)
+         -rotazione a dx con perno il nonno di z
+         -coloriamo di nero il parent di z per eliminare il problema rosso figlio di rosso
+         -coloriamo di rosso il nonno di z(infatti facendo la rotazione a dx sul nonno, abbiamo aggiunto un nodo nero a dx e quindi
+         per riportare l'equilibrio, lo dovremmo ricolorare di rosso)
+     */
       z->parent->color = 0; 
       z->parent->parent->color = 1; 
       rb_right_rotate(t, z->parent->parent);
@@ -150,12 +167,12 @@ while(z->parent->color == 1) { /*  continuiamo finchè il padre di z sarà rosso
   }
 
 
-  else {   //CASO 2: il padre di z è figlio dx del nonno di z, simmetrico al precedente
-    struct rb_node *y = z->parent->parent->left; 
+  else {    //3 casi simmetrici ai primi 3, con parent di z figlio dx
+    struct rb_node *u = z->parent->parent->left; 
 
-    if(y->color == 1) {
+    if(u->color == 1) {
       z->parent->color = 0;
-      y->color = 0;
+      u->color = 0;
       z->parent->parent->color = 1;
       z = z->parent->parent;
     }
