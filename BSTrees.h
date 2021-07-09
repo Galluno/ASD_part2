@@ -93,12 +93,12 @@ struct node* find(struct node *root, int k)
 }
 //......................................................................................................................................
 /*
-  Per inserimento: insert 5 lol
-  Per terminazione: exit 5 lol
+  Per inserimento: insert 5 str
+  Per terminazione: exit 5 str
+*/
 
 
-
-
+/*
 int main ()
 {
 
@@ -148,6 +148,4 @@ int main ()
   destroyTree(root); //deallocazione dell'albero
   return 0;
 }
-
 */
-
